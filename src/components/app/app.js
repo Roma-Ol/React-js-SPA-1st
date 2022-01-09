@@ -12,9 +12,9 @@ class App extends Component {
     super(props);
     this.state = {
       data: [
-        {name: 'Lisa', salary: 800, increase: false,  rise: false, id: 1},
+        {name: 'Sofia', salary: 800, increase: false,  rise: false, id: 1},
         {name: 'Tom', salary: 500, increase: false, rise: false,  id: 2},
-        {name: 'Jerry', salary: 900, increase: false, rise: false,  id: 3},
+        {name: 'Nazap', salary: 900, increase: false, rise: false,  id: 3},
       ],
       id: 4
     }
@@ -34,26 +34,24 @@ class App extends Component {
       salary: salary,
       increase: false,
       rise: false,
-      id: this.id++
+      id: this.state.id
     }
 
     let newData = this.state.data.concat(newWorker);
     this.setState(({id}) => {
       return{
-        data: newData
+        data: newData,
+        id: ++id
       }
     })
   }
 
   onToggleIncrease = (id) => {
     this.setState(({data}) => {
-      const index = data.findIndex(item => item.id === id);
-  
-      const oldRow = data[index];
-      const newRow = {...oldRow, increase: !oldRow.increase};
-      
-      const newData = [...data.slice(0, index), newRow, ...data.slice(index, +1)];
-      console.log(id, index)
+      const index = data.findIndex(item => item.id === id),
+            oldRow = data[index],
+            newRow = {...oldRow, increase: !oldRow.increase},
+            newData = [...data.slice(0, index), newRow, ...data.slice(index + 1)];
       
       return {
         data: newData
@@ -63,14 +61,28 @@ class App extends Component {
 
   onToggleRise = (id) => {
     console.log(`${id} was rised!`);
+    this.setState(({data}) => {
+      const index = data.findIndex(item => item.id === id),
+            oldRow = data[index],
+            newRow = {...oldRow, rise: !oldRow.rise},
+            newData = [...data.slice(0, index), newRow, ...data.slice(index + 1)];
+      
+      return {
+        data: newData
+      }
+    })
   }
 
   render() {
-    const {data} = this.state;
+    const {data} = this.state,
+          workers = data.length,
+          workersToPromote = data.filter(item => item.increase === true).length;
 
     return (
       <div className='app'>
-        <AppInfo />
+        <AppInfo 
+          workers={workers}
+          workersToPromote={workersToPromote}/>
   
         <div className="search-panel">
           <SearchPanel />
