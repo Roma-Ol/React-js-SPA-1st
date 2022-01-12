@@ -16,6 +16,7 @@ class App extends Component {
         {name: 'Tom', salary: 500, increase: false, rise: false,  id: 2},
         {name: 'Nazap', salary: 900, increase: false, rise: false,  id: 3},
       ],
+      searchTerm: '',
       id: 4
     }
   }
@@ -52,17 +53,31 @@ class App extends Component {
             oldRow = data[index],
             newRow = {...oldRow, [prop]: !oldRow[prop]},
             newData = [...data.slice(0, index), newRow, ...data.slice(index + 1)];
-      
       return {
         data: newData
       }
     })
   }
 
+  searchEmp = (items, term) => {
+    if (!term.length) {
+      return items;
+    }
+
+    return items.filter(item => {
+      return item.name.indexOf(term) > -1
+    })
+  }
+
+  onUpdateSearch = (term) => {
+    this.setState({searchTerm: term})
+  }
+  
   render() {
-    const {data} = this.state,
+    const {data, searchTerm} = this.state,
           workers = data.length,
-          workersToPromote = data.filter(item => item.increase === true).length;
+          workersToPromote = data.filter(item => item.increase === true).length,
+          visibleData = this.searchEmp(data, searchTerm);
 
     return (
       <div className='app'>
@@ -71,12 +86,13 @@ class App extends Component {
           workersToPromote={workersToPromote}/>
   
         <div className="search-panel">
-          <SearchPanel />
+          <SearchPanel 
+            onUpdateSearch={this.onUpdateSearch}/>
           <AppFilter />      
         </div>
   
         <EmployeesList 
-          data={data}
+          data={visibleData}
           onDelete={this.deleteItem}
           onToggleProp={this.onToggleProp}/>
         <EmployeeAddForm 
